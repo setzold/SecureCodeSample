@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace SimpleRestService
 {
@@ -27,12 +29,19 @@ namespace SimpleRestService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole().AddDebug();
+
+            loggerFactory.AddProvider(
+            new ConsoleLoggerProvider(
+                    (text, logLevel) => logLevel >= LogLevel.Trace, false));
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
 
             app.UseMvc();
         }
